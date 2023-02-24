@@ -1,26 +1,21 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+/**
+ * @name App
+ * @description
+ * @author darcrand
+ */
 
-function App() {
+import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+import DocEdit from './pages/DocEdit'
+
+const router = createBrowserRouter([
+  { path: '/doc-manage/:id/edit', element: <DocEdit /> },
+  { path: '*', element: <div>404</div> },
+])
+
+export default function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    <>
+      <RouterProvider router={router} fallbackElement={<div>loading...</div>} />
+    </>
+  )
 }
-
-export default App;
