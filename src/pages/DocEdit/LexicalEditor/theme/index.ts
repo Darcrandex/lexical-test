@@ -9,6 +9,8 @@ const THEME_PREFIX = 'lexical-node__'
 export const customTheme: EditorThemeClasses = {
   heading: {
     h1: `${THEME_PREFIX}h1`,
+    h2: `${THEME_PREFIX}h2`,
+    h3: `${THEME_PREFIX}h3`,
   },
 
   paragraph: `${THEME_PREFIX}p`,

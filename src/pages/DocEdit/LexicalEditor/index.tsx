@@ -9,6 +9,8 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
 
+import { HeadingNode, QuoteNode } from './nodes'
+
 import { TypeaheadPlugin } from './plugins/Typeahead'
 import { customTheme } from './theme'
 
@@ -18,7 +20,7 @@ export function LexicalEditorContext(props: {
 }) {
   const initialConfig: InitialConfigType = {
     namespace: 'doc-editor',
-    nodes: [],
+    nodes: [HeadingNode, QuoteNode],
     onError: (error: Error) => {
       throw error
     },

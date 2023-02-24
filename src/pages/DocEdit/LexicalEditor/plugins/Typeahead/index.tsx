@@ -6,9 +6,11 @@
 
 import * as ReactDOM from 'react-dom'
 import { useCallback, useMemo, useState } from 'react'
-import { TextNode } from 'lexical'
+import { TextNode, $getSelection, $isRangeSelection } from 'lexical'
 import { LexicalTypeaheadMenuPlugin, useBasicTypeaheadTriggerMatch } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { $createHeadingNode } from '@lexical/rich-text'
+import { $setBlocksType_experimental } from '@lexical/selection'
 
 import { PickerOption } from './PickerOption'
 import { PickerMenuItem } from './PickerMenuItem'
@@ -40,13 +42,26 @@ export function TypeaheadPlugin() {
 
   const menuOptions = useMemo(() => {
     return [
-      new PickerOption('H1', {
-        onSelect(queryString) {
-          console.log('selected', queryString)
-        },
-      }),
+      ...Array(3)
+        .fill(0)
+        .map(
+          (_, i) =>
+            new PickerOption(`标题 ${i + 1}`, {
+              onSelect(queryString) {
+                editor.update(() => {
+                  const selection = $getSelection()
+                  if ($isRangeSelection(selection)) {
+                    // @ts-ignore
+                    $setBlocksType_experimental(selection, () => $createHeadingNode(`h${i + 1}`))
+                  }
+                })
+              },
+            })
+        ),
     ]
-  }, [])
+  }, [editor])
+
+  console.log('menuOptions', menuOptions.length)
 
   return (
     <LexicalTypeaheadMenuPlugin<PickerOption>
