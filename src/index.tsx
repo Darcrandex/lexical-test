@@ -1,14 +1,22 @@
 import ReactDOM from 'react-dom/client'
+import { RecoilRoot } from 'recoil'
+
+import { ConfigProvider } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
+import { StyleProvider } from '@ant-design/cssinjs'
+
 import './index.css'
 import App from './App'
 import reportWebVitals from './reportWebVitals'
 
-import { RecoilRoot } from 'recoil'
-
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 root.render(
   <RecoilRoot>
-    <App />
+    <ConfigProvider locale={zhCN}>
+      <StyleProvider hashPriority='high'>
+        <App />
+      </StyleProvider>
+    </ConfigProvider>
   </RecoilRoot>
 )
 

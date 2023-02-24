@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* 修复 antd-icons 位置偏移的问题 */
+@layer base {
+  svg {
+    display: inline;
+    vertical-align: baseline;
+  }
+}

@@ -1,0 +1,9 @@
+// 编辑器内部元素的默认样式
+
+$prefix: 'lexical-node__';
+
+.#{$prefix} {
+  &p {
+    margin: 4px;
+  }
+}
