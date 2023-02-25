@@ -6,7 +6,6 @@
 
 import { CloseOutlined } from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
-
 import { useDocAsideTab } from '../stores'
 
 export function TabBaseInfo() {
