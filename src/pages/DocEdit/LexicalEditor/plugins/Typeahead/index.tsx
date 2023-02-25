@@ -19,7 +19,7 @@ import './styles.scss'
 export function TypeaheadPlugin() {
   const [editor] = useLexicalComposerContext()
 
-  const [queryString, setQueryString] = useState<string | null>(null)
+  const [, setQueryString] = useState<string | null>(null)
 
   // 选择菜单中的其中一项时
   const onSelectOption = useCallback(
@@ -60,8 +60,6 @@ export function TypeaheadPlugin() {
         ),
     ]
   }, [editor])
-
-  console.log('menuOptions', menuOptions.length)
 
   return (
     <LexicalTypeaheadMenuPlugin<PickerOption>

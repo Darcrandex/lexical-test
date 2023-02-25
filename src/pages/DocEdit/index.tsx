@@ -4,12 +4,14 @@
  * @author darcrand
  */
 
-import { LexicalEditorContext, LexicalEditor } from './LexicalEditor'
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { ArrowLeftOutlined } from '@ant-design/icons'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { Button, Space } from 'antd'
-import { useNavigate } from 'react-router-dom'
 import { useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
+
+import { Aside } from './Aside'
+import { LexicalEditor, LexicalEditorContext } from './LexicalEditor'
 
 function DocEditContent() {
   const [editor] = useLexicalComposerContext()
@@ -43,9 +45,7 @@ function DocEditContent() {
           <LexicalEditor />
         </main>
 
-        <aside className='w-96 border-l'>
-          <p>侧边栏</p>
-        </aside>
+        <Aside />
       </section>
     </section>
   )
