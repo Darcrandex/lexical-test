@@ -7,13 +7,12 @@
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'
 import { $setBlocksType_experimental } from '@lexical/selection'
-import { Select } from 'antd'
+import { Button, Divider, Select, Space } from 'antd'
 import * as lexical from 'lexical'
-import { NodeKey } from 'lexical'
 import { useCallback, useEffect, useState } from 'react'
+import { useCurrentBlockNode } from '../../utils/use-current-block-node'
 
 export const TextBlockTypes = ['paragraph', 'heading']
-
 export const TextTypeOptions = [
   { value: 'paragraph', label: '段落' },
   { value: 'h1', label: '标题 1' },
@@ -21,9 +20,15 @@ export const TextTypeOptions = [
   { value: 'h3', label: '标题 3' },
 ]
 
-export type BlockTypeSettingsProps = { nodeKey: NodeKey }
+export const TextFormatOptions = [
+  { value: 'bold', label: 'B' },
+  { value: 'italic', label: 'I' },
+  { value: 'underline', label: 'U' },
+  { value: 'code', label: '<>' },
+]
 
-export function BlockTypeSettings(props: BlockTypeSettingsProps) {
+export function BlockTypeSettings() {
+  const { currBlockNode } = useCurrentBlockNode()
   const [editor] = useLexicalComposerContext()
   const [type, updateType] = useState<string>('paragraph')
 
@@ -46,18 +51,41 @@ export function BlockTypeSettings(props: BlockTypeSettingsProps) {
 
   useEffect(() => {
     editor.update(() => {
-      const node = lexical.$getNodeByKey(props.nodeKey)
+      if (!currBlockNode) return
+
+      const node = lexical.$getNodeByKey(currBlockNode.nodeKey)
       if (node) {
         const textType = $isHeadingNode(node) ? node.getTag() : node.getType()
         updateType(textType)
       }
     })
     // 当同一行文本，切换成不同的类型，内容不变但 nodeKey 会变
-  }, [props.nodeKey, editor, updateType])
+  }, [currBlockNode, currBlockNode?.nodeKey, editor, updateType])
+
+  // 修改文本样式
+  const onFormat = useCallback(
+    (type: lexical.TextFormatType) => {
+      editor.update(() => {
+        editor.dispatchCommand(lexical.FORMAT_TEXT_COMMAND, type)
+      })
+    },
+    [editor]
+  )
+
+  if (!currBlockNode || TextBlockTypes.every((t) => t !== currBlockNode.nodeType))
+    return <p className='py-4 text-center text-gray-300'>请先选择一个节点</p>
 
   return (
     <>
       <Select className='w-40' value={type} onChange={onSetBlockType} options={TextTypeOptions} />
+      <Divider />
+      <Space>
+        {TextFormatOptions.map((v) => (
+          <Button key={v.value} type='link' onClick={() => onFormat(v.value as lexical.TextFormatType)}>
+            {v.label}
+          </Button>
+        ))}
+      </Space>
     </>
   )
 }

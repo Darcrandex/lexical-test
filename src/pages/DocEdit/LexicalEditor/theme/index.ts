@@ -14,4 +14,11 @@ export const customTheme: EditorThemeClasses = {
   },
 
   paragraph: `${THEME_PREFIX}p`,
+
+  text: {
+    bold: `${THEME_PREFIX}text-bold`,
+    italic: `${THEME_PREFIX}text-italic`,
+    underline: `${THEME_PREFIX}text-underline`,
+    code: `${THEME_PREFIX}text-code`,
+  },
 }

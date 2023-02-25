@@ -10,7 +10,7 @@ import { Button, Space } from 'antd'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Aside } from './Aside'
+import { TabAside } from './TabAside'
 import { LexicalEditor, LexicalEditorContext } from './LexicalEditor'
 
 function DocEditContent() {
@@ -45,7 +45,7 @@ function DocEditContent() {
           <LexicalEditor />
         </main>
 
-        <Aside />
+        <TabAside />
       </section>
     </section>
   )

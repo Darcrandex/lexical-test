@@ -1,5 +1,5 @@
 /**
- * @name Aside
+ * @name TabAside
  * @description 侧边内容
  * @author darcrand
  */
@@ -17,21 +17,15 @@ const tabs = [
   { key: 'block', Icon: BlockOutlined, Content: TabBlockInfo },
 ]
 
-export function Aside() {
+export function TabAside() {
   const params = useParams()
   const { currTabKey, setCurrTabKey } = useDocAsideTab(params.id)
 
   return (
     <>
-      {Boolean(currTabKey) && (
-        <aside className='w-96 border-l'>
-          {tabs
-            .filter(({ key }) => key === currTabKey)
-            .map(({ key, Content }) => (
-              <Content key={key} />
-            ))}
-        </aside>
-      )}
+      {tabs.map(({ key, Content }) => (
+        <Content key={key} show={key === currTabKey} />
+      ))}
 
       <nav className='border-l'>
         {tabs.map(({ key, Icon }) => (
