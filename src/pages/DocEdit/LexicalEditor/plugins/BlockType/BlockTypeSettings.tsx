@@ -51,6 +51,7 @@ export const FontFamilyOptions = [
 function useTextStyles() {
   const [editor] = useLexicalComposerContext()
   const [fontColor, setColor] = useState('#000000')
+  const [bgColor, setBgColor] = useState('')
   const [fontSize, setFontSize] = useState(FontSizeOptions[0].value)
   const [fontFamily, setFontFamily] = useState(FontFamilyOptions[0].value)
 
@@ -71,6 +72,7 @@ function useTextStyles() {
     const selection = lexical.$getSelection()
     if (lexical.$isRangeSelection(selection)) {
       setColor($getSelectionStyleValueForProperty(selection, 'color', '#000000'))
+      setBgColor($getSelectionStyleValueForProperty(selection, 'background-color', ''))
       setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', FontSizeOptions[0].value))
       setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family', FontFamilyOptions[0].value))
     }
@@ -82,7 +84,7 @@ function useTextStyles() {
     })
   }, [editor, onUpdated])
 
-  return { fontColor, fontSize, fontFamily, setTextStyles }
+  return { fontColor, bgColor, fontSize, fontFamily, setTextStyles }
 }
 
 export function BlockTypeSettings() {
@@ -140,8 +142,18 @@ export function BlockTypeSettings() {
     [editor]
   )
 
+  // 缩进方式
+  const onSetIndent = useCallback(
+    (type: lexical.LexicalCommand<void>) => {
+      editor.update(() => {
+        editor.dispatchCommand(type, undefined)
+      })
+    },
+    [editor]
+  )
+
   // 基础样式
-  const { fontColor, fontSize, fontFamily, setTextStyles } = useTextStyles()
+  const { fontColor, bgColor, fontSize, fontFamily, setTextStyles } = useTextStyles()
 
   if (!currBlockNode || TextBlockTypes.every((t) => t !== currBlockNode.nodeType))
     return <p className='py-4 text-center text-gray-300'>请先选择一个节点</p>
@@ -151,12 +163,19 @@ export function BlockTypeSettings() {
       <Select className='w-40' value={type} onChange={onSetBlockType} options={TextTypeOptions} />
       <Divider />
 
-      <Space>
+      <Space wrap>
         {ElementFormatOptions.map((v) => (
           <Button key={v.value} type='link' onClick={() => onFormatElement(v.value as lexical.ElementFormatType)}>
             {v.label}
           </Button>
         ))}
+
+        <Button type='link' onClick={() => onSetIndent(lexical.OUTDENT_CONTENT_COMMAND)}>
+          减少缩进
+        </Button>
+        <Button type='link' onClick={() => onSetIndent(lexical.INDENT_CONTENT_COMMAND)}>
+          增加 缩进
+        </Button>
       </Space>
       <Divider />
 
@@ -171,6 +190,14 @@ export function BlockTypeSettings() {
 
       <p>{fontColor}</p>
       <GithubPicker className='select-none' color={fontColor} onChange={(res) => setTextStyles({ color: res.hex })} />
+      <Divider />
+
+      <p>{bgColor}</p>
+      <GithubPicker
+        className='select-none'
+        color={bgColor}
+        onChange={(res) => setTextStyles({ 'background-color': res.hex })}
+      />
       <Divider />
 
       <p>{fontSize}</p>
