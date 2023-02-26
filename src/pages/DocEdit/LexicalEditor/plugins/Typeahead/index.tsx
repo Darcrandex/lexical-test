@@ -14,6 +14,7 @@ import { $setBlocksType_experimental } from '@lexical/selection'
 
 import { PickerOption } from './PickerOption'
 import { PickerMenuItem } from './PickerMenuItem'
+import { INSERT_IMAGE } from '../Image/ImagePlugin'
 import './styles.scss'
 
 export function TypeaheadPlugin() {
@@ -58,6 +59,12 @@ export function TypeaheadPlugin() {
               },
             })
         ),
+
+      new PickerOption('图片', {
+        onSelect(queryString) {
+          editor.dispatchCommand(INSERT_IMAGE, undefined)
+        },
+      }),
     ]
   }, [editor])
 

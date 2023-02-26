@@ -13,6 +13,7 @@ import { HeadingNode, QuoteNode } from './nodes'
 
 import { TypeaheadPlugin } from './plugins/Typeahead'
 import { customTheme } from './theme'
+import { ImageNode, ImagePlugin } from './plugins/Image'
 
 export function LexicalEditorContext(props: {
   children: JSX.Element | string | (JSX.Element | string)[]
@@ -20,7 +21,9 @@ export function LexicalEditorContext(props: {
 }) {
   const initialConfig: InitialConfigType = {
     namespace: 'doc-editor',
-    nodes: [HeadingNode, QuoteNode],
+
+    // 注册渲染节点
+    nodes: [HeadingNode, QuoteNode, ImageNode],
     onError: (error: Error) => {
       throw error
     },
@@ -45,6 +48,7 @@ export function LexicalEditor() {
 
         {/* 注册插件 */}
         <TypeaheadPlugin />
+        <ImagePlugin />
       </section>
     </>
   )

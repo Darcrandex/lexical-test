@@ -21,6 +21,12 @@ export function useCurrentBlockNode() {
         const nodeType = currBlockNode.getType()
         const nodeKey = currBlockNode.getKey()
         setNode({ nodeKey, nodeType })
+      } else if (lexical.$isNodeSelection(selection)) {
+        // 节点类型，例如图片，图表等不可以输入文本的节点
+        const [currBlockNode] = selection.getNodes()
+        const nodeType = currBlockNode.getType()
+        const nodeKey = currBlockNode.getKey()
+        setNode({ nodeKey, nodeType })
       }
     })
   }, [editor, setNode])
