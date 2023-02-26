@@ -24,7 +24,10 @@ function DocEditContent() {
   }, [editor])
 
   return (
-    <section className='flex flex-col h-screen'>
+    // 默认的 select 行为会令编辑器中框选的文本清空
+    // 禁用整个页面的 select 行为
+    // 只保留文本编辑器的
+    <section className='flex flex-col h-screen select-none'>
       <header className='flex items-center px-4 py-2 border-b'>
         <Button type='link' icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>
           返回

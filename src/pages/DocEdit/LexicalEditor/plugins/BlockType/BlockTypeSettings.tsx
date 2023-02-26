@@ -189,19 +189,15 @@ export function BlockTypeSettings() {
       <Divider />
 
       <p>{fontColor}</p>
-      <GithubPicker className='select-none' color={fontColor} onChange={(res) => setTextStyles({ color: res.hex })} />
+      <GithubPicker color={fontColor} onChange={(res) => setTextStyles({ color: res.hex })} />
       <Divider />
 
       <p>{bgColor}</p>
-      <GithubPicker
-        className='select-none'
-        color={bgColor}
-        onChange={(res) => setTextStyles({ 'background-color': res.hex })}
-      />
+      <GithubPicker color={bgColor} onChange={(res) => setTextStyles({ 'background-color': res.hex })} />
       <Divider />
 
       <p>{fontSize}</p>
-      <ul className='flex flex-wrap select-none cursor-pointer'>
+      <ul className='flex flex-wrap cursor-pointer'>
         {FontSizeOptions.map((v) => (
           <li key={v.value} className='m-2' onClick={() => setTextStyles({ 'font-size': v.value })}>
             {v.label}
@@ -210,7 +206,7 @@ export function BlockTypeSettings() {
       </ul>
 
       <p>{fontFamily}</p>
-      <ul className='flex flex-wrap select-none cursor-pointer'>
+      <ul className='flex flex-wrap cursor-pointer'>
         {FontFamilyOptions.map((v) => (
           <li key={v.value} className='m-2' onClick={() => setTextStyles({ 'font-family': v.value })}>
             {v.label}
