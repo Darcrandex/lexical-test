@@ -1,6 +1,7 @@
 /**
  * @name BlockTypeSettings
  * @description 普通文本块（h1-h3 p ul li）配置面板
+ * @description 配置面板的交互需要禁用 select 事件，否则编辑器的 selection 会丢失
  * @author darcrand
  */
 
@@ -9,7 +10,7 @@ import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'
 import { $setBlocksType_experimental, $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection'
 import { Button, Divider, Select, Space } from 'antd'
 import * as lexical from 'lexical'
-import { SketchPicker } from 'react-color'
+import { GithubPicker } from 'react-color'
 import { useCallback, useEffect, useState } from 'react'
 import { useCurrentBlockNode } from '../../utils/use-current-block-node'
 
@@ -35,18 +36,30 @@ export const ElementFormatOptions = [
   { value: 'justify', label: '两端对齐' },
 ]
 
+export const FontSizeOptions = [
+  { value: '16px', label: '16px' },
+  { value: '18px', label: '18px' },
+  { value: '20px', label: '20px' },
+]
+
+export const FontFamilyOptions = [
+  { value: '微软雅黑', label: '微软雅黑' },
+  { value: '宋体', label: '宋体' },
+  { value: '黑体', label: '黑体' },
+]
+
 function useTextStyles() {
   const [editor] = useLexicalComposerContext()
-  const [color, setColor] = useState('#000')
+  const [fontColor, setColor] = useState('#000000')
+  const [fontSize, setFontSize] = useState(FontSizeOptions[0].value)
+  const [fontFamily, setFontFamily] = useState(FontFamilyOptions[0].value)
 
   const setTextStyles = useCallback(
     (styles: Record<string, string>) => {
       editor.update(() => {
-        console.log('ssss', styles)
         const selection = lexical.$getSelection()
-        console.log('selection', selection)
-
         if (lexical.$isRangeSelection(selection)) {
+          // 应用样式并修改对应节点元素的 style 属性
           $patchStyleText(selection, styles)
         }
       })
@@ -55,19 +68,21 @@ function useTextStyles() {
   )
 
   const onUpdated = useCallback(() => {
-    editor.update(() => {
-      const selection = lexical.$getSelection()
-      if (lexical.$isRangeSelection(selection)) {
-        setColor($getSelectionStyleValueForProperty(selection, 'color', '#000'))
-      }
-    })
-  }, [editor])
+    const selection = lexical.$getSelection()
+    if (lexical.$isRangeSelection(selection)) {
+      setColor($getSelectionStyleValueForProperty(selection, 'color', '#000000'))
+      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', FontSizeOptions[0].value))
+      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family', FontFamilyOptions[0].value))
+    }
+  }, [])
 
   useEffect(() => {
-    return editor.registerUpdateListener(onUpdated)
+    return editor.registerUpdateListener(() => {
+      editor.update(onUpdated)
+    })
   }, [editor, onUpdated])
 
-  return { color, setTextStyles }
+  return { fontColor, fontSize, fontFamily, setTextStyles }
 }
 
 export function BlockTypeSettings() {
@@ -126,7 +141,7 @@ export function BlockTypeSettings() {
   )
 
   // 基础样式
-  const { color, setTextStyles } = useTextStyles()
+  const { fontColor, fontSize, fontFamily, setTextStyles } = useTextStyles()
 
   if (!currBlockNode || TextBlockTypes.every((t) => t !== currBlockNode.nodeType))
     return <p className='py-4 text-center text-gray-300'>请先选择一个节点</p>
@@ -154,10 +169,27 @@ export function BlockTypeSettings() {
       </Space>
       <Divider />
 
-      <Button onClick={() => setTextStyles({ color: '#fa4526' })}>color</Button>
+      <p>{fontColor}</p>
+      <GithubPicker className='select-none' color={fontColor} onChange={(res) => setTextStyles({ color: res.hex })} />
+      <Divider />
 
-      {/* 组件点击会让 selection 丢失 */}
-      <SketchPicker color={color} onChangeComplete={(color) => setTextStyles({ color: color.hex })} />
+      <p>{fontSize}</p>
+      <ul className='flex flex-wrap select-none cursor-pointer'>
+        {FontSizeOptions.map((v) => (
+          <li key={v.value} className='m-2' onClick={() => setTextStyles({ 'font-size': v.value })}>
+            {v.label}
+          </li>
+        ))}
+      </ul>
+
+      <p>{fontFamily}</p>
+      <ul className='flex flex-wrap select-none cursor-pointer'>
+        {FontFamilyOptions.map((v) => (
+          <li key={v.value} className='m-2' onClick={() => setTextStyles({ 'font-family': v.value })}>
+            {v.label}
+          </li>
+        ))}
+      </ul>
     </>
   )
 }

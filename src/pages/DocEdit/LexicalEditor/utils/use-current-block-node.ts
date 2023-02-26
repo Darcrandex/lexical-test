@@ -4,7 +4,7 @@ import * as lexical from 'lexical'
 import { useCallback, useEffect, useState } from 'react'
 
 /**
- * @description 获取当前一个距离光标最近的 块 节点
+ * @description 获取当前一个距离光标最近的 块 节点，或一个被选中的不可编辑文本的节点
  */
 export function useCurrentBlockNode() {
   const [editor] = useLexicalComposerContext()
