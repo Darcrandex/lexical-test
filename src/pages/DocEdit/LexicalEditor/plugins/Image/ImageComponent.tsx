@@ -4,7 +4,7 @@
  * @author darcrand
  */
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import lexical from 'lexical'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'
@@ -15,28 +15,40 @@ export type ImageComponentProps = { src?: string; width?: string | number; heigh
 export function ImageComponent(props: ImageComponentProps & { nodeKey: lexical.NodeKey }) {
   const [editor] = useLexicalComposerContext()
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(props.nodeKey)
+  const ref = useRef<HTMLSelectElement>(null)
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerCommand(
+      // 1. 点击选中
+      editor.registerCommand<MouseEvent>(
         lexical.CLICK_COMMAND,
-        () => {
-          return true
+        (event) => {
+          if (event.target === ref.current || ref.current?.contains?.(event.target as Node)) {
+            if (!event.shiftKey) {
+              clearSelection()
+            }
+            setSelected(true)
+            return true
+          }
+          return false
         },
         lexical.COMMAND_PRIORITY_LOW
       )
     )
-  }, [editor])
+  }, [clearSelection, editor, setSelected])
 
   return (
     <>
-      <h1>ImageComponent</h1>
+      <section ref={ref}>
+        <h1>ImageComponent</h1>
+        <p>isSelected {isSelected ? 'yes' : 'no'}</p>
 
-      {props.src ? (
-        <img src={props.src} alt='' width={props.width} height={props.height} />
-      ) : (
-        <div className='w-full h-10 bg-gray-300 text-gray-50'>no image</div>
-      )}
+        {props.src ? (
+          <img src={props.src} alt='' width={props.width} height={props.height} />
+        ) : (
+          <div className='w-full h-10 bg-gray-300 text-gray-50'>no image</div>
+        )}
+      </section>
     </>
   )
 }

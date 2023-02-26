@@ -1,7 +1,7 @@
 import * as lexical from 'lexical'
 import { ImageComponent, ImageComponentProps } from './ImageComponent'
 
-const NODE_TYPE = 'image-node'
+export const IMAGE_NODE_TYPE = 'image-node'
 
 export type SerializedImageNode = lexical.Spread<
   {
@@ -17,11 +17,11 @@ export class ImageNode extends lexical.DecoratorNode<JSX.Element> {
 
   constructor(props?: ImageComponentProps, key?: lexical.NodeKey) {
     super(key)
-    this.__props = props
+    this.__props = props || { width: '100%', height: 200 }
   }
 
   static getType() {
-    return NODE_TYPE
+    return IMAGE_NODE_TYPE
   }
 
   static clone(node: ImageNode): ImageNode {
@@ -33,7 +33,7 @@ export class ImageNode extends lexical.DecoratorNode<JSX.Element> {
   }
 
   exportJSON(): SerializedImageNode {
-    return { nodeKey: this.getKey(), props: this.__props, type: NODE_TYPE, version: 1 }
+    return { nodeKey: this.getKey(), props: this.__props, type: IMAGE_NODE_TYPE, version: 1 }
   }
 
   createDOM(config: lexical.EditorConfig): HTMLElement {

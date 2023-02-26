@@ -6,13 +6,17 @@
 
 import { CloseOutlined } from '@ant-design/icons'
 import { useParams } from 'react-router-dom'
+import clsx from 'clsx'
+
 import { useDocAsideTab } from '../stores'
 import { BlockTypeSettings } from '../LexicalEditor/plugins/BlockType'
-import clsx from 'clsx'
+import { ImageSettings } from '../LexicalEditor/plugins/Image'
+import { useCurrentBlockNode } from '../LexicalEditor/utils/use-current-block-node'
 
 export function TabBlockInfo(props: { show: boolean }) {
   const params = useParams()
   const { setCurrTabKey } = useDocAsideTab(params.id)
+  const { currBlockNode } = useCurrentBlockNode()
 
   return (
     <>
@@ -27,7 +31,10 @@ export function TabBlockInfo(props: { show: boolean }) {
           </span>
         </header>
 
+        {!currBlockNode && <p className='py-4 text-center text-gray-300'>请先选择一个节点</p>}
+
         <BlockTypeSettings />
+        <ImageSettings />
       </aside>
     </>
   )

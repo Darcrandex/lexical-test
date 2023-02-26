@@ -1,2 +1,5 @@
+export { ImageComponent } from './ImageComponent'
+export type { ImageComponentProps } from './ImageComponent'
 export { ImageNode } from './ImageNode'
 export { ImagePlugin } from './ImagePlugin'
+export { ImageSettings } from './ImageSettings'

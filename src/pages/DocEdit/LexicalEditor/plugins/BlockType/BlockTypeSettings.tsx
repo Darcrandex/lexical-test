@@ -155,8 +155,7 @@ export function BlockTypeSettings() {
   // 基础样式
   const { fontColor, bgColor, fontSize, fontFamily, setTextStyles } = useTextStyles()
 
-  if (!currBlockNode || TextBlockTypes.every((t) => t !== currBlockNode.nodeType))
-    return <p className='py-4 text-center text-gray-300'>请先选择一个节点</p>
+  if (!currBlockNode || TextBlockTypes.every((t) => t !== currBlockNode.nodeType)) return null
 
   return (
     <>
