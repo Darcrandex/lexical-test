@@ -5,6 +5,19 @@ $prefix: 'lexical-node__';
 .#{$prefix} {
   &p {
     margin: 4px;
+
+    // 空段落占位符
+    &.paragraph--empty {
+      position: relative;
+      &::after {
+        position: absolute;
+        left: 1em;
+        top: 0;
+        display: block;
+        content: '请输入 / 添加内容';
+        color: #ccc;
+      }
+    }
   }
 
   &h1 {

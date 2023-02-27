@@ -15,6 +15,7 @@ import { TypeaheadPlugin } from './plugins/Typeahead'
 import { customTheme } from './theme'
 import { ImageNode, ImagePlugin } from './plugins/Image'
 import { DividerNode, DividerPlugin } from './plugins/Divider'
+import { EmptyPlaceholderPlugin } from './plugins/EmptyPlaceholder/EmptyPlaceholderPlugin'
 
 export function LexicalEditorContext(props: {
   children: JSX.Element | string | (JSX.Element | string)[]
@@ -43,7 +44,7 @@ export function LexicalEditor() {
       <section className='lexical__outer'>
         <RichTextPlugin
           contentEditable={<ContentEditable className='lexical__root' />}
-          placeholder={<p className='lexical__placeholder'>请输入内容</p>}
+          placeholder={null}
           ErrorBoundary={LexicalErrorBoundary}
         />
 
@@ -52,6 +53,7 @@ export function LexicalEditor() {
         <ListPlugin />
         <ImagePlugin />
         <DividerPlugin />
+        <EmptyPlaceholderPlugin />
       </section>
     </>
   )

@@ -6,7 +6,7 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { Button, Divider, Select, Space } from 'antd'
+import { Button, Divider, Space } from 'antd'
 import * as lexical from 'lexical'
 import { GithubPicker } from 'react-color'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
