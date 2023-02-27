@@ -5,13 +5,16 @@
  * @author darcrand
  */
 
-import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'
-import { $setBlocksType_experimental, $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection'
+import { useCallback, useEffect, useState } from 'react'
 import { Button, Divider, Select, Space } from 'antd'
 import * as lexical from 'lexical'
 import { GithubPicker } from 'react-color'
-import { useCallback, useEffect, useState } from 'react'
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
+import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'
+import { $setBlocksType_experimental, $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection'
+import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils'
+import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode'
+
 import { useCurrentBlockNode } from '../../utils/use-current-block-node'
 
 export const TextBlockTypes = ['paragraph', 'heading']
@@ -27,6 +30,9 @@ export const TextFormatOptions = [
   { value: 'italic', label: 'I' },
   { value: 'underline', label: 'U' },
   { value: 'code', label: '<>' },
+  { value: 'strikethrough', label: 'S' },
+  { value: 'subscript', label: 'Sub' },
+  { value: 'superscript', label: 'Sup' },
 ]
 
 export const ElementFormatOptions = [
@@ -132,6 +138,27 @@ export function BlockTypeSettings() {
     [editor]
   )
 
+  // 清空样式
+  const onClearFormat = useCallback(() => {
+    editor.update(() => {
+      const selection = lexical.$getSelection()
+      if (lexical.$isRangeSelection(selection)) {
+        // 只清空当前块元素的样式
+        // $selectAll(selection)
+        selection.getNodes().forEach((node) => {
+          if (lexical.$isTextNode(node)) {
+            node.setFormat(0)
+            node.setStyle('')
+            $getNearestBlockElementAncestorOrThrow(node).setFormat('')
+          }
+          if ($isDecoratorBlockNode(node)) {
+            node.setFormat('')
+          }
+        })
+      }
+    })
+  }, [editor])
+
   // 修改块元素对齐方式
   const onFormatElement = useCallback(
     (type: lexical.ElementFormatType) => {
@@ -178,12 +205,15 @@ export function BlockTypeSettings() {
       </Space>
       <Divider />
 
-      <Space>
+      <Space wrap>
         {TextFormatOptions.map((v) => (
           <Button key={v.value} type='link' onClick={() => onFormatText(v.value as lexical.TextFormatType)}>
             {v.label}
           </Button>
         ))}
+        <Button type='link' onClick={onClearFormat}>
+          clear
+        </Button>
       </Space>
       <Divider />
 
