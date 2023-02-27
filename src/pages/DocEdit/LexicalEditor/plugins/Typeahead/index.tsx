@@ -16,6 +16,7 @@ import { $setBlocksType_experimental } from '@lexical/selection'
 import { PickerOption } from './PickerOption'
 import { PickerMenuItem } from './PickerMenuItem'
 import { INSERT_IMAGE } from '../Image/ImagePlugin'
+import { INSERT_DIVIDER } from '../Divider'
 import './styles.scss'
 
 export function TypeaheadPlugin() {
@@ -76,6 +77,12 @@ export function TypeaheadPlugin() {
       new PickerOption('图片', {
         onSelect(queryString) {
           editor.dispatchCommand(INSERT_IMAGE, undefined)
+        },
+      }),
+
+      new PickerOption('分割线', {
+        onSelect(queryString) {
+          editor.dispatchCommand(INSERT_DIVIDER, undefined)
         },
       }),
     ]

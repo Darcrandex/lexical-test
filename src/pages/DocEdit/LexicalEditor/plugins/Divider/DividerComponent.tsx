@@ -4,13 +4,13 @@
  * @author darcrand
  */
 
+import { useCallback, useEffect, useMemo, useRef } from 'react'
+import lexical from 'lexical'
+import clsx from 'clsx'
+import { Popover, Radio, Space } from 'antd'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { useLexicalNodeSelection } from '@lexical/react/useLexicalNodeSelection'
 import { mergeRegister } from '@lexical/utils'
-import lexical from 'lexical'
-import { useCallback, useEffect, useMemo } from 'react'
-import clsx from 'clsx'
-import { Popover, Radio, Space } from 'antd'
 import { SketchPicker } from 'react-color'
 
 import { $isDividerNode } from './DividerNode'
@@ -36,6 +36,7 @@ const sizeOptions = [
 export default function DividerComponent(props: DividerComponentProps & { nodeKey: lexical.NodeKey }) {
   const [editor] = useLexicalComposerContext()
   const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(props.nodeKey)
+  const ref = useRef<HTMLDivElement>(null)
 
   const onRemove = useCallback(
     (event: KeyboardEvent) => {
@@ -58,17 +59,14 @@ export default function DividerComponent(props: DividerComponentProps & { nodeKe
   useEffect(() => {
     return mergeRegister(
       // 1. 鼠标点击时让节点选中或取消选中
-      editor.registerCommand(
+      editor.registerCommand<MouseEvent>(
         lexical.CLICK_COMMAND,
         (event) => {
-          // 外层有一个容器
-          const wrapperElement = editor.getElementByKey(props.nodeKey)
-
-          if (wrapperElement?.firstChild === event.target) {
+          if (event.target === ref.current || ref.current?.contains?.(event.target as Node)) {
             if (!event.shiftKey) {
               clearSelection()
             }
-            setSelected(!isSelected)
+            setSelected(true)
             return true
           }
 
@@ -77,10 +75,10 @@ export default function DividerComponent(props: DividerComponentProps & { nodeKe
         lexical.COMMAND_PRIORITY_LOW
       ),
 
-      // 2. 按下 Delete键 时，删除节点
+      // 2. 按下 退格键 时，删除节点
       editor.registerCommand(lexical.KEY_BACKSPACE_COMMAND, onRemove, lexical.COMMAND_PRIORITY_LOW),
 
-      // 2. 按下 退格键 时，删除节点
+      // 3. 按下 删除键 时，删除节点
       editor.registerCommand(lexical.KEY_DELETE_COMMAND, onRemove, lexical.COMMAND_PRIORITY_LOW)
     )
   }, [clearSelection, editor, isSelected, onRemove, props.nodeKey, setSelected])
@@ -144,7 +142,7 @@ export default function DividerComponent(props: DividerComponentProps & { nodeKe
           </Space>
         }
       >
-        <div className={clsx('py-2 cursor-pointer', isSelected && 'outline outline-blue-300')}>
+        <div ref={ref} className={clsx('py-2 cursor-pointer', isSelected && 'outline outline-blue-300')}>
           <div
             className='pointer-events-none'
             style={{
