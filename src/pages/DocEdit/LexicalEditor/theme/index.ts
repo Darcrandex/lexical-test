@@ -21,4 +21,9 @@ export const customTheme: EditorThemeClasses = {
     underline: `${THEME_PREFIX}text-underline`,
     code: `${THEME_PREFIX}text-code`,
   },
+
+  list: {
+    ol: `${THEME_PREFIX}ol`,
+    ul: `${THEME_PREFIX}ul`,
+  },
 }

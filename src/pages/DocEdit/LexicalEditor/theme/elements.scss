@@ -38,4 +38,16 @@ $prefix: 'lexical-node__';
     border-radius: 4px;
     background-color: #f0f0f0;
   }
+
+  &ol {
+    list-style-type: decimal;
+    padding-left: 2em;
+    margin: 1em 0;
+  }
+
+  &ul {
+    list-style-type: disc;
+    padding-left: 2em;
+    margin: 1em 0;
+  }
 }

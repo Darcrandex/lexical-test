@@ -13,16 +13,28 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'
 import { $setBlocksType_experimental, $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection'
 import { $getNearestBlockElementAncestorOrThrow } from '@lexical/utils'
+import {
+  $isListNode,
+  $isListItemNode,
+  INSERT_UNORDERED_LIST_COMMAND,
+  INSERT_ORDERED_LIST_COMMAND,
+  REMOVE_LIST_COMMAND,
+} from '@lexical/list'
 import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode'
 
 import { useCurrentBlockNode } from '../../utils/use-current-block-node'
 
-export const TextBlockTypes = ['paragraph', 'heading']
+// 允许使用配置的节点类型
+// 能触发聚焦的节点类型
+export const TextBlockTypes = ['paragraph', 'heading', 'listitem']
+// 可选的节点元素类型
 export const TextTypeOptions = [
   { value: 'paragraph', label: '段落' },
   { value: 'h1', label: '标题 1' },
   { value: 'h2', label: '标题 2' },
   { value: 'h3', label: '标题 3' },
+  { value: 'ul', label: '无序列表' },
+  { value: 'ol', label: '有序列表' },
 ]
 
 export const TextFormatOptions = [
@@ -54,6 +66,7 @@ export const FontFamilyOptions = [
   { value: '黑体', label: '黑体' },
 ]
 
+// 修改所需文本内容的样式
 function useTextStyles() {
   const [editor] = useLexicalComposerContext()
   const [fontColor, setColor] = useState('#000000')
@@ -105,14 +118,27 @@ export function BlockTypeSettings() {
         if (lexical.$isRangeSelection(selection)) {
           if (key === 'paragraph') {
             $setBlocksType_experimental(selection, () => lexical.$createParagraphNode())
-          } else {
+          } else if (/h[1-6]{1}/.test(key)) {
+            // h1 - h6
             // @ts-ignore
             $setBlocksType_experimental(selection, () => $createHeadingNode(key))
+          } else if (key === 'ul') {
+            if (type !== 'ul') {
+              editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+            } else {
+              editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
+            }
+          } else if (key === 'ol') {
+            if (type !== 'ol') {
+              editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+            } else {
+              editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
+            }
           }
         }
       })
     },
-    [editor]
+    [editor, type]
   )
 
   useEffect(() => {
@@ -121,8 +147,20 @@ export function BlockTypeSettings() {
 
       const node = lexical.$getNodeByKey(currBlockNode.nodeKey)
       if (node) {
-        const textType = $isHeadingNode(node) ? node.getTag() : node.getType()
-        updateType(textType)
+        let blockType = ''
+        if ($isHeadingNode(node)) {
+          // h1 - h6
+          blockType = node.getTag()
+        } else if ($isListItemNode(node)) {
+          // ul ol
+          const parent = node.getParent()
+          if ($isListNode(parent)) {
+            blockType = parent.getTag()
+          }
+        } else {
+          blockType = node.getType()
+        }
+        updateType(blockType)
       }
     })
     // 当同一行文本，切换成不同的类型，内容不变但 nodeKey 会变
@@ -187,6 +225,16 @@ export function BlockTypeSettings() {
   return (
     <>
       <Select className='w-40' value={type} onChange={onSetBlockType} options={TextTypeOptions} />
+      <Divider />
+
+      <p>{type}</p>
+      <ul className='flex flex-wrap cursor-pointer'>
+        {TextTypeOptions.map((v) => (
+          <li key={v.value} className='m-2' onClick={() => onSetBlockType(v.value)}>
+            {v.label}
+          </li>
+        ))}
+      </ul>
       <Divider />
 
       <Space wrap>

@@ -6,11 +6,11 @@
 
 import { LexicalComposer, InitialConfigType } from '@lexical/react/LexicalComposer'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
+import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
 
-import { HeadingNode, QuoteNode } from './nodes'
-
+import { baseNodes } from './nodes'
 import { TypeaheadPlugin } from './plugins/Typeahead'
 import { customTheme } from './theme'
 import { ImageNode, ImagePlugin } from './plugins/Image'
@@ -23,7 +23,7 @@ export function LexicalEditorContext(props: {
     namespace: 'doc-editor',
 
     // 注册渲染节点
-    nodes: [HeadingNode, QuoteNode, ImageNode],
+    nodes: [...baseNodes, ImageNode],
     onError: (error: Error) => {
       throw error
     },
@@ -48,6 +48,7 @@ export function LexicalEditor() {
 
         {/* 注册插件 */}
         <TypeaheadPlugin />
+        <ListPlugin />
         <ImagePlugin />
       </section>
     </>

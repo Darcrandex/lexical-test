@@ -31,6 +31,13 @@ export function TabBlockInfo(props: { show: boolean }) {
           </span>
         </header>
 
+        <div className='bg-gray-200'>
+          <p>debug</p>
+          <p>
+            {currBlockNode?.nodeKey} {currBlockNode?.nodeType}
+          </p>
+        </div>
+
         {!currBlockNode && <p className='py-4 text-center text-gray-300'>请先选择一个节点</p>}
 
         <BlockTypeSettings />

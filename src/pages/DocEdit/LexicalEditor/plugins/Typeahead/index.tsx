@@ -10,6 +10,7 @@ import { TextNode, $getSelection, $isRangeSelection } from 'lexical'
 import { LexicalTypeaheadMenuPlugin, useBasicTypeaheadTriggerMatch } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $createHeadingNode } from '@lexical/rich-text'
+import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND } from '@lexical/list'
 import { $setBlocksType_experimental } from '@lexical/selection'
 
 import { PickerOption } from './PickerOption'
@@ -59,6 +60,18 @@ export function TypeaheadPlugin() {
               },
             })
         ),
+
+      new PickerOption('无序列表', {
+        onSelect(queryString) {
+          editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
+        },
+      }),
+
+      new PickerOption('有序列表', {
+        onSelect(queryString) {
+          editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
+        },
+      }),
 
       new PickerOption('图片', {
         onSelect(queryString) {
