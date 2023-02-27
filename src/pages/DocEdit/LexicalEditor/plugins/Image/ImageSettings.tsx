@@ -4,7 +4,7 @@
  * @author darcrand
  */
 
-import { InputNumber } from 'antd'
+import { Button, InputNumber } from 'antd'
 import { ChangeEvent, useCallback, useEffect, useState } from 'react'
 import { $getNodeByKey } from 'lexical'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
@@ -71,11 +71,24 @@ export function ImageSettings() {
     [updatePropsToNode]
   )
 
+  const onRemoveNode = useCallback(() => {
+    editor.update(() => {
+      if (currBlockNode?.nodeKey) {
+        const node = $getNodeByKey(currBlockNode.nodeKey)
+        if ($isImageNode(node)) {
+          node.selectPrevious()
+          node.remove()
+        }
+      }
+    })
+  }, [editor, currBlockNode?.nodeKey])
+
   if (currBlockNode?.nodeType !== IMAGE_NODE_TYPE) return null
 
   return (
     <>
       <h1>ImageSettings</h1>
+      <Button onClick={onRemoveNode}>remove</Button>
 
       <label className='block m-6 border border-dashed rounded-xl border-blue-300 cursor-pointer hover:border-blue-500 transition-all'>
         <p className='py-8 text-center'>{imageProps?.src ? '替换图片' : '选择图片'}</p>

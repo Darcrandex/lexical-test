@@ -224,9 +224,6 @@ export function BlockTypeSettings() {
 
   return (
     <>
-      <Select className='w-40' value={type} onChange={onSetBlockType} options={TextTypeOptions} />
-      <Divider />
-
       <p>{type}</p>
       <ul className='flex flex-wrap cursor-pointer'>
         {TextTypeOptions.map((v) => (
