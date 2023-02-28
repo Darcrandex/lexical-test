@@ -1,0 +1,27 @@
+.lexical__empty-text {
+  position: relative;
+  &::after {
+    position: absolute;
+    left: 0.5em;
+    top: 0;
+    display: block;
+    color: #ccc;
+    pointer-events: none;
+  }
+}
+
+p.lexical__empty-text::after {
+  content: '请输入 / 添加内容';
+}
+
+h1.lexical__empty-text::after {
+  content: '标题 1';
+}
+
+h2.lexical__empty-text::after {
+  content: '标题 2';
+}
+
+h3.lexical__empty-text::after {
+  content: '标题 3';
+}

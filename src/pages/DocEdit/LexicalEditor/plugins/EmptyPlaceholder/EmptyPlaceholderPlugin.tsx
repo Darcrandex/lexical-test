@@ -7,9 +7,12 @@
 import { useEffect } from 'react'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $getNodeByKey, $isParagraphNode } from 'lexical'
+import { $isHeadingNode } from '@lexical/rich-text'
 import { useCurrentBlockNode } from '../../utils/use-current-block-node'
 
-const PARAGRAPH_EMPTY_CLASS = 'paragraph--empty'
+import './styles.scss'
+
+const PARAGRAPH_EMPTY_CLASS = 'lexical__empty-text'
 
 export function EmptyPlaceholderPlugin() {
   const { currBlockNode } = useCurrentBlockNode()
@@ -20,7 +23,7 @@ export function EmptyPlaceholderPlugin() {
     editor.update(() => {
       if (currBlockNode && currBlockNode.nodeKey) {
         const node = $getNodeByKey(currBlockNode.nodeKey)
-        if ($isParagraphNode(node) && node.getAllTextNodes().length === 0) {
+        if (($isParagraphNode(node) || $isHeadingNode(node)) && node.getAllTextNodes().length === 0) {
           const ele = editor.getElementByKey(currBlockNode.nodeKey)
           ele?.classList.add(PARAGRAPH_EMPTY_CLASS)
         }
