@@ -9,6 +9,7 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { ListPlugin } from '@lexical/react/LexicalListPlugin'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin'
 
 import { baseNodes } from './nodes'
 import { TypeaheadPlugin } from './plugins/Typeahead'
@@ -16,6 +17,7 @@ import { customTheme } from './theme'
 import { ImageNode, ImagePlugin } from './plugins/Image'
 import { DividerNode, DividerPlugin } from './plugins/Divider'
 import { EmptyPlaceholderPlugin } from './plugins/EmptyPlaceholder/EmptyPlaceholderPlugin'
+import { TableActionMenuPlugin } from './plugins/TableActions/TableActionsPlugin'
 
 export function LexicalEditorContext(props: {
   children: JSX.Element | string | (JSX.Element | string)[]
@@ -49,11 +51,14 @@ export function LexicalEditor() {
         />
 
         {/* 注册插件 */}
-        <TypeaheadPlugin />
         <ListPlugin />
+        <TablePlugin />
+
         <ImagePlugin />
         <DividerPlugin />
+        <TypeaheadPlugin />
         <EmptyPlaceholderPlugin />
+        <TableActionMenuPlugin />
       </section>
     </>
   )

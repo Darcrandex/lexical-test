@@ -27,4 +27,8 @@ export const customTheme: EditorThemeClasses = {
     ol: `${THEME_PREFIX}ol`,
     ul: `${THEME_PREFIX}ul`,
   },
+
+  table: `${THEME_PREFIX}table`,
+  tableCellHeader: `${THEME_PREFIX}table-cell-header`,
+  tableCell: `${THEME_PREFIX}table-cell`,
 }

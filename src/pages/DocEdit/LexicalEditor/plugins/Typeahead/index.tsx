@@ -12,6 +12,7 @@ import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext
 import { $createHeadingNode } from '@lexical/rich-text'
 import { INSERT_UNORDERED_LIST_COMMAND, INSERT_ORDERED_LIST_COMMAND } from '@lexical/list'
 import { $setBlocksType_experimental } from '@lexical/selection'
+import { INSERT_TABLE_COMMAND } from '@lexical/table'
 
 import { PickerOption } from './PickerOption'
 import { PickerMenuItem } from './PickerMenuItem'
@@ -93,6 +94,16 @@ export function TypeaheadPlugin() {
       new PickerOption('分割线', {
         onSelect(queryString) {
           editor.dispatchCommand(INSERT_DIVIDER, undefined)
+        },
+      }),
+
+      new PickerOption('表格', {
+        onSelect(queryString) {
+          editor.dispatchCommand(INSERT_TABLE_COMMAND, {
+            columns: '3',
+            rows: '3',
+            includeHeaders: { columns: false, rows: true },
+          })
         },
       }),
     ]

@@ -54,4 +54,25 @@ $prefix: 'lexical-node__';
     padding-left: 2em;
     margin: 1em 0;
   }
+
+  &table {
+    width: 100%;
+    margin: 16px 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    overflow-y: scroll;
+    table-layout: fixed;
+  }
+
+  &table-cell-header {
+    background-color: #fafafa;
+  }
+
+  &table-cell {
+    vertical-align: top;
+    text-align: start;
+    position: relative;
+    outline: none;
+    border: 1px solid #ddd;
+  }
 }

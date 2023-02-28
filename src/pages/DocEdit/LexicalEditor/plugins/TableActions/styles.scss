@@ -1,0 +1,15 @@
+.table-actions-plugin__cell-menu-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  will-change: transform;
+}
+
+.table-actions-plugin__menus {
+  @apply fixed w-40 rounded-md bg-white;
+  box-shadow: 0 2px 12px 0 rgba(#000, 0.1);
+}
+
+.table-actions-plugin__menu-item {
+  @apply block m-2 p-2 text-sm rounded-md transition-all cursor-pointer hover:bg-blue-50 hover:text-blue-500;
+}
