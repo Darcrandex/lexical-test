@@ -18,7 +18,7 @@ export function PickerMenuItem(props: PickerMenuItemProps) {
     <li
       key={props.option.key}
       ref={props.option.setRefElement}
-      className={clsx('lexical__typeahead-nodes-item', props.isSelected && 'bg-gray-300')}
+      className={clsx('lexical__typeahead-nodes-item', props.isSelected && 'selected')}
       onClick={props.onClick}
     >
       {props.option.title}

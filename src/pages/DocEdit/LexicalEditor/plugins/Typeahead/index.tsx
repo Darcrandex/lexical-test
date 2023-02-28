@@ -6,7 +6,7 @@
 
 import * as ReactDOM from 'react-dom'
 import { useCallback, useMemo, useState } from 'react'
-import { TextNode, $getSelection, $isRangeSelection } from 'lexical'
+import { TextNode, $getSelection, $isRangeSelection, $createParagraphNode } from 'lexical'
 import { LexicalTypeaheadMenuPlugin, useBasicTypeaheadTriggerMatch } from '@lexical/react/LexicalTypeaheadMenuPlugin'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $createHeadingNode } from '@lexical/rich-text'
@@ -45,6 +45,16 @@ export function TypeaheadPlugin() {
 
   const menuOptions = useMemo(() => {
     return [
+      new PickerOption('段落', {
+        onSelect(queryString) {
+          editor.update(() => {
+            const selection = $getSelection()
+            if ($isRangeSelection(selection)) {
+              $setBlocksType_experimental(selection, () => $createParagraphNode())
+            }
+          })
+        },
+      }),
       ...Array(3)
         .fill(0)
         .map(

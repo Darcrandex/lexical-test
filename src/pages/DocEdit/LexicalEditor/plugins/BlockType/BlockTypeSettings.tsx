@@ -26,7 +26,7 @@ import { useCurrentBlockNode } from '../../utils/use-current-block-node'
 
 // 允许使用配置的节点类型
 // 能触发聚焦的节点类型
-export const TextBlockTypes = ['paragraph', 'heading', 'listitem']
+export const TextBlockTypes = [lexical.ParagraphNode, 'paragraph', 'heading', 'listitem']
 // 可选的节点元素类型
 export const TextTypeOptions = [
   { value: 'paragraph', label: '段落' },
@@ -69,10 +69,10 @@ export const FontFamilyOptions = [
 // 修改所需文本内容的样式
 function useTextStyles() {
   const [editor] = useLexicalComposerContext()
-  const [fontColor, setColor] = useState('#000000')
+  const [fontColor, setColor] = useState('')
   const [bgColor, setBgColor] = useState('')
-  const [fontSize, setFontSize] = useState(FontSizeOptions[0].value)
-  const [fontFamily, setFontFamily] = useState(FontFamilyOptions[0].value)
+  const [fontSize, setFontSize] = useState('')
+  const [fontFamily, setFontFamily] = useState('')
 
   const setTextStyles = useCallback(
     (styles: Record<string, string>) => {
@@ -90,10 +90,10 @@ function useTextStyles() {
   const onUpdated = useCallback(() => {
     const selection = lexical.$getSelection()
     if (lexical.$isRangeSelection(selection)) {
-      setColor($getSelectionStyleValueForProperty(selection, 'color', '#000000'))
-      setBgColor($getSelectionStyleValueForProperty(selection, 'background-color', ''))
-      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', FontSizeOptions[0].value))
-      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family', FontFamilyOptions[0].value))
+      setColor($getSelectionStyleValueForProperty(selection, 'color'))
+      setBgColor($getSelectionStyleValueForProperty(selection, 'background-color'))
+      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size'))
+      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family'))
     }
   }, [])
 

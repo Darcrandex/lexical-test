@@ -6,7 +6,7 @@
 
 import { ArrowLeftOutlined } from '@ant-design/icons'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
-import { Button, Space } from 'antd'
+import { Button, Space, Tag } from 'antd'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -33,7 +33,10 @@ function DocEditContent() {
           返回
         </Button>
 
-        <h1 className='mx-auto flex items-center'>文档模版</h1>
+        <h1 className='mx-auto flex items-center'>
+          <span className='mr-2'>文档模版</span>
+          <Tag color='blue'>刑侦</Tag>
+        </h1>
 
         <Space>
           <Button type='primary' ghost onClick={onSave}>
