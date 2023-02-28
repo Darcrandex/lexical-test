@@ -6,9 +6,22 @@
  */
 
 import { useCallback, useEffect, useState } from 'react'
-import { Button, Divider, Space } from 'antd'
+import { Button, Form, Space } from 'antd'
+import {
+  FontColorsOutlined,
+  BgColorsOutlined,
+  AlignLeftOutlined,
+  AlignRightOutlined,
+  AlignCenterOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  BoldOutlined,
+  ItalicOutlined,
+  UnderlineOutlined,
+  StrikethroughOutlined,
+  ClearOutlined,
+} from '@ant-design/icons'
 import * as lexical from 'lexical'
-import { GithubPicker } from 'react-color'
 import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import { $createHeadingNode, $isHeadingNode } from '@lexical/rich-text'
 import { $setBlocksType_experimental, $getSelectionStyleValueForProperty, $patchStyleText } from '@lexical/selection'
@@ -23,13 +36,15 @@ import {
 import { $isDecoratorBlockNode } from '@lexical/react/LexicalDecoratorBlockNode'
 
 import { useCurrentBlockNode } from '../../utils/use-current-block-node'
+import { DropDownMenus } from '../../ui/DropdownMenus'
+import { ColorPicker } from '../../ui/ColorPicker'
 
 // 允许使用配置的节点类型
 // 能触发聚焦的节点类型
 export const TextBlockTypes = [lexical.ParagraphNode, 'paragraph', 'heading', 'listitem']
 // 可选的节点元素类型
-export const TextTypeOptions = [
-  { value: 'paragraph', label: '段落' },
+export const ElementTypes = [
+  { value: 'p', label: '段落' },
   { value: 'h1', label: '标题 1' },
   { value: 'h2', label: '标题 2' },
   { value: 'h3', label: '标题 3' },
@@ -37,21 +52,11 @@ export const TextTypeOptions = [
   { value: 'ol', label: '有序列表' },
 ]
 
-export const TextFormatOptions = [
-  { value: 'bold', label: 'B' },
-  { value: 'italic', label: 'I' },
-  { value: 'underline', label: 'U' },
-  { value: 'code', label: '<>' },
-  { value: 'strikethrough', label: 'S' },
-  { value: 'subscript', label: 'Sub' },
-  { value: 'superscript', label: 'Sup' },
-]
-
-export const ElementFormatOptions = [
-  { value: 'left', label: '左对齐' },
-  { value: 'center', label: '居中' },
-  { value: 'right', label: '右对齐' },
-  { value: 'justify', label: '两端对齐' },
+export const Aligns = [
+  { value: 'left', label: '左对齐', Icon: <AlignLeftOutlined /> },
+  { value: 'center', label: '居中', Icon: <AlignCenterOutlined /> },
+  { value: 'right', label: '右对齐', Icon: <AlignRightOutlined /> },
+  // { value: 'justify', label: '两端对齐' },
 ]
 
 export const FontSizeOptions = [
@@ -69,10 +74,16 @@ export const FontFamilyOptions = [
 // 修改所需文本内容的样式
 function useTextStyles() {
   const [editor] = useLexicalComposerContext()
-  const [fontColor, setColor] = useState('')
+  const [fontColor, setColor] = useState('#000000')
   const [bgColor, setBgColor] = useState('')
   const [fontSize, setFontSize] = useState('')
   const [fontFamily, setFontFamily] = useState('')
+  const [isBold, setIsBold] = useState(false)
+  const [isItalic, setIsItalic] = useState(false)
+  const [isUnderline, setIsUnderline] = useState(false)
+  const [isStrikethrough, setIsStrikethrough] = useState(false)
+  const [isSubscript, setIsSubscript] = useState(false)
+  const [isSuperscript, setIsSuperscript] = useState(false)
 
   const setTextStyles = useCallback(
     (styles: Record<string, string>) => {
@@ -90,10 +101,17 @@ function useTextStyles() {
   const onUpdated = useCallback(() => {
     const selection = lexical.$getSelection()
     if (lexical.$isRangeSelection(selection)) {
-      setColor($getSelectionStyleValueForProperty(selection, 'color'))
+      setColor($getSelectionStyleValueForProperty(selection, 'color', '#000000'))
       setBgColor($getSelectionStyleValueForProperty(selection, 'background-color'))
-      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size'))
-      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family'))
+      setFontSize($getSelectionStyleValueForProperty(selection, 'font-size', FontSizeOptions[0].value))
+      setFontFamily($getSelectionStyleValueForProperty(selection, 'font-family', FontFamilyOptions[0].value))
+
+      setIsBold(selection.hasFormat('bold'))
+      setIsItalic(selection.hasFormat('italic'))
+      setIsUnderline(selection.hasFormat('underline'))
+      setIsStrikethrough(selection.hasFormat('strikethrough'))
+      setIsSubscript(selection.hasFormat('subscript'))
+      setIsSuperscript(selection.hasFormat('superscript'))
     }
   }, [])
 
@@ -103,33 +121,45 @@ function useTextStyles() {
     })
   }, [editor, onUpdated])
 
-  return { fontColor, bgColor, fontSize, fontFamily, setTextStyles }
+  return {
+    fontColor,
+    bgColor,
+    fontSize,
+    fontFamily,
+    isBold,
+    isItalic,
+    isUnderline,
+    isStrikethrough,
+    isSubscript,
+    isSuperscript,
+    setTextStyles,
+  }
 }
 
 export function BlockTypeSettings() {
   const { currBlockNode } = useCurrentBlockNode()
   const [editor] = useLexicalComposerContext()
-  const [type, updateType] = useState<string>('paragraph')
+  const [eleType, updateEleType] = useState<string>('p')
 
-  const onSetBlockType = useCallback(
+  const setEleType = useCallback(
     (key: string) => {
       editor.update(() => {
         const selection = lexical.$getSelection()
         if (lexical.$isRangeSelection(selection)) {
-          if (key === 'paragraph') {
+          if (key === 'p') {
             $setBlocksType_experimental(selection, () => lexical.$createParagraphNode())
           } else if (/h[1-6]{1}/.test(key)) {
             // h1 - h6
             // @ts-ignore
             $setBlocksType_experimental(selection, () => $createHeadingNode(key))
           } else if (key === 'ul') {
-            if (type !== 'ul') {
+            if (eleType !== 'ul') {
               editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined)
             } else {
               editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
             }
           } else if (key === 'ol') {
-            if (type !== 'ol') {
+            if (eleType !== 'ol') {
               editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined)
             } else {
               editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined)
@@ -138,7 +168,7 @@ export function BlockTypeSettings() {
         }
       })
     },
-    [editor, type]
+    [editor, eleType]
   )
 
   useEffect(() => {
@@ -147,24 +177,27 @@ export function BlockTypeSettings() {
 
       const node = lexical.$getNodeByKey(currBlockNode.nodeKey)
       if (node) {
-        let blockType = ''
-        if ($isHeadingNode(node)) {
+        let elementType = ''
+        if (lexical.$isParagraphNode(node)) {
+          elementType = 'p'
+        } else if ($isHeadingNode(node)) {
           // h1 - h6
-          blockType = node.getTag()
+          elementType = node.getTag()
         } else if ($isListItemNode(node)) {
           // ul ol
           const parent = node.getParent()
           if ($isListNode(parent)) {
-            blockType = parent.getTag()
+            elementType = parent.getTag()
           }
         } else {
-          blockType = node.getType()
+          elementType = node.getType()
         }
-        updateType(blockType)
+        // 把节点的类型转化为对应的元素类型；其他的自定义节点使用它原来的 type
+        updateEleType(elementType)
       }
     })
     // 当同一行文本，切换成不同的类型，内容不变但 nodeKey 会变
-  }, [currBlockNode, currBlockNode?.nodeKey, editor, updateType])
+  }, [currBlockNode, currBlockNode?.nodeKey, editor, updateEleType])
 
   // 修改文本样式
   const onFormatText = useCallback(
@@ -218,75 +251,131 @@ export function BlockTypeSettings() {
   )
 
   // 基础样式
-  const { fontColor, bgColor, fontSize, fontFamily, setTextStyles } = useTextStyles()
+  const {
+    fontColor,
+    bgColor,
+    fontSize,
+    fontFamily,
+    isBold,
+    isItalic,
+    isUnderline,
+    isStrikethrough,
+    isSubscript,
+    isSuperscript,
+    setTextStyles,
+  } = useTextStyles()
 
   if (!currBlockNode || TextBlockTypes.every((t) => t !== currBlockNode.nodeType)) return null
 
   return (
     <>
-      <p>{type}</p>
-      <ul className='flex flex-wrap cursor-pointer'>
-        {TextTypeOptions.map((v) => (
-          <li key={v.value} className='m-2' onClick={() => onSetBlockType(v.value)}>
-            {v.label}
-          </li>
-        ))}
-      </ul>
-      <Divider />
+      <section className='mx-4'>
+        <Form labelCol={{ span: 6 }} labelAlign='left' colon={false}>
+          <Form.Item label='文本'>
+            <Space>
+              <DropDownMenus
+                options={ElementTypes}
+                value={eleType}
+                onChange={(value) => {
+                  setEleType(value)
+                }}
+              />
 
-      <Space wrap>
-        {ElementFormatOptions.map((v) => (
-          <Button key={v.value} type='link' onClick={() => onFormatElement(v.value as lexical.ElementFormatType)}>
-            {v.label}
-          </Button>
-        ))}
+              <DropDownMenus
+                options={FontFamilyOptions}
+                value={fontFamily}
+                onChange={(value) => {
+                  setTextStyles({ 'font-family': value })
+                }}
+              />
 
-        <Button type='link' onClick={() => onSetIndent(lexical.OUTDENT_CONTENT_COMMAND)}>
-          减少缩进
-        </Button>
-        <Button type='link' onClick={() => onSetIndent(lexical.INDENT_CONTENT_COMMAND)}>
-          增加 缩进
-        </Button>
-      </Space>
-      <Divider />
+              <DropDownMenus
+                options={FontSizeOptions}
+                value={fontSize}
+                onChange={(value) => {
+                  setTextStyles({ 'font-size': value })
+                }}
+              />
+            </Space>
+          </Form.Item>
 
-      <Space wrap>
-        {TextFormatOptions.map((v) => (
-          <Button key={v.value} type='link' onClick={() => onFormatText(v.value as lexical.TextFormatType)}>
-            {v.label}
-          </Button>
-        ))}
-        <Button type='link' onClick={onClearFormat}>
-          clear
-        </Button>
-      </Space>
-      <Divider />
+          <Form.Item label='颜色'>
+            <Space>
+              <ColorPicker color={fontColor} onChange={(value) => setTextStyles({ color: value })}>
+                <Button type='text' icon={<FontColorsOutlined style={{ color: fontColor }} />}></Button>
+              </ColorPicker>
 
-      <p>{fontColor}</p>
-      <GithubPicker color={fontColor} onChange={(res) => setTextStyles({ color: res.hex })} />
-      <Divider />
+              <ColorPicker color={bgColor} onChange={(value) => setTextStyles({ 'background-color': value })}>
+                <Button type='text' icon={<BgColorsOutlined style={{ color: bgColor }} />}></Button>
+              </ColorPicker>
+            </Space>
+          </Form.Item>
 
-      <p>{bgColor}</p>
-      <GithubPicker color={bgColor} onChange={(res) => setTextStyles({ 'background-color': res.hex })} />
-      <Divider />
+          <Form.Item label='对齐'>
+            <Space>
+              {Aligns.map((v) => (
+                <Button
+                  key={v.value}
+                  type='text'
+                  icon={v.Icon}
+                  onClick={() => onFormatElement(v.value as lexical.ElementFormatType)}
+                />
+              ))}
+            </Space>
+          </Form.Item>
 
-      <p>{fontSize}</p>
-      <ul className='flex flex-wrap cursor-pointer'>
-        {FontSizeOptions.map((v) => (
-          <li key={v.value} className='m-2' onClick={() => setTextStyles({ 'font-size': v.value })}>
-            {v.label}
-          </li>
-        ))}
-      </ul>
+          <Form.Item label='缩进'>
+            <Space>
+              <Button
+                icon={<MenuFoldOutlined />}
+                type='text'
+                onClick={() => onSetIndent(lexical.OUTDENT_CONTENT_COMMAND)}
+              />
+              <Button
+                icon={<MenuUnfoldOutlined />}
+                type='text'
+                onClick={() => onSetIndent(lexical.INDENT_CONTENT_COMMAND)}
+              />
+            </Space>
+          </Form.Item>
 
-      <p>{fontFamily}</p>
-      <ul className='flex flex-wrap cursor-pointer'>
-        {FontFamilyOptions.map((v) => (
-          <li key={v.value} className='m-2' onClick={() => setTextStyles({ 'font-family': v.value })}>
-            {v.label}
-          </li>
-        ))}
-      </ul>
+          <Form.Item label='文本修饰'>
+            <Space>
+              <Button type={isBold ? 'link' : 'text'} icon={<BoldOutlined />} onClick={() => onFormatText('bold')} />
+              <Button
+                type={isItalic ? 'link' : 'text'}
+                icon={<ItalicOutlined />}
+                onClick={() => onFormatText('italic')}
+              />
+              <Button
+                type={isUnderline ? 'link' : 'text'}
+                icon={<UnderlineOutlined />}
+                onClick={() => onFormatText('underline')}
+              />
+              <Button
+                type={isStrikethrough ? 'link' : 'text'}
+                icon={<StrikethroughOutlined />}
+                onClick={() => onFormatText('strikethrough')}
+              />
+
+              <Button type={isSubscript ? 'link' : 'text'} onClick={() => onFormatText('subscript')}>
+                <var>
+                  x<sub>2</sub>
+                </var>
+              </Button>
+              <Button type={isSuperscript ? 'link' : 'text'} onClick={() => onFormatText('superscript')}>
+                <var>
+                  x<sup>2</sup>
+                </var>
+              </Button>
+            </Space>
+          </Form.Item>
+
+          <Form.Item label='样式清空'>
+            <Button type='text' icon={<ClearOutlined />} onClick={onClearFormat} />
+          </Form.Item>
+        </Form>
+      </section>
     </>
   )
 }

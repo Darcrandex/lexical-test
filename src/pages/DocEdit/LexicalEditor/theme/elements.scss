@@ -39,6 +39,10 @@ $prefix: 'lexical-node__';
     background-color: #f0f0f0;
   }
 
+  &strikethrough {
+    text-decoration: line-through;
+  }
+
   &ol {
     list-style-type: decimal;
     padding-left: 2em;
